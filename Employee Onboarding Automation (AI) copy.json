@@ -1,0 +1,1344 @@
+{
+  "name": "Employee Onboarding Automation (AI) copy",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "authentication": "airtableTokenApi",
+        "baseId": {
+          "__rl": true,
+          "value": "appre6PhPtzCoNcOx",
+          "mode": "id"
+        },
+        "tableId": {
+          "__rl": true,
+          "value": "tblqaBEAU5GooF2hm",
+          "mode": "id"
+        },
+        "triggerField": "Created_Time",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.airtableTrigger",
+      "typeVersion": 1,
+      "position": [
+        -496,
+        -1184
+      ],
+      "id": "ba6f90b5-3de4-47fa-afe4-0346e108d9e4",
+      "name": "Airtable Trigger",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "FavyQ3PY0qVQyVbs",
+          "name": "Airtable account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.fields.Email_address }}",
+        "subject": "Welcome to the Company 🎉",
+        "emailType": "text",
+        "message": "=Hello {{ $json.fields['Employee Name'] }} ,\n\nWelcome to the company.\n\nAccess your personal dashboard:\nhttps://hung36566.preview.softr.app/?autoUser=true&show-toolbar=true\n\nYou can:\n- Upload documents\n- Track onboarding\n\nThanks,\nHR Team",
+        "options": {}
+      },
+      "id": "6f49d461-bb8a-49e5-b9ff-bf9535fe1e80",
+      "name": "Send Welcome Email",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        -272,
+        -1184
+      ],
+      "webhookId": "d8458248-0861-4f8b-8c06-57ccd6736d08",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "JCFa2XPuBXU9nEgN",
+          "name": "Gmail OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "doc-check-001",
+              "leftValue": "={{ $json.upload_status }}",
+              "rightValue": "UPLOADED",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "99598bb9-a968-42dc-8145-8b4611c8f24e",
+      "name": "Check Document Uploaded",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        176,
+        -1264
+      ]
+    },
+    {
+      "parameters": {
+        "sendTo": "tusharganmukhe5580@gmail.com",
+        "subject": "=Document Uploaded -{{ $json['Employee Name'] }} - Verification Required",
+        "message": "=Hello HR Team,<br><br>Employee <strong>{{ $json['Employee Name'] }}</strong>{{ $json['Email address'] }}  has uploaded their onboarding documents.<br><br>Please verify the documents within 24 hours.<br><br>Access the employee record: https://airtable.com/appre6PhPtzCoNcOx/tblqaBEAU5GooF2hm<br><br>Thanks",
+        "options": {}
+      },
+      "id": "00da0360-3fc7-4ab3-8891-26c37780e891",
+      "name": "Notify HR to Verify",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        624,
+        -1408
+      ],
+      "webhookId": "3fd9b4fe-b04e-4bcb-b057-eee674bb9e47",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "JCFa2XPuBXU9nEgN",
+          "name": "Gmail OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "base": {
+          "__rl": true,
+          "value": "appre6PhPtzCoNcOx",
+          "mode": "list",
+          "cachedResultName": "Employee Onboarding System",
+          "cachedResultUrl": "https://airtable.com/appre6PhPtzCoNcOx"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblqaBEAU5GooF2hm",
+          "mode": "list",
+          "cachedResultName": "Employees",
+          "cachedResultUrl": "https://airtable.com/appre6PhPtzCoNcOx/tblqaBEAU5GooF2hm"
+        },
+        "id": "={{ $(\"Airtable Trigger\").item.json.id }}",
+        "options": {}
+      },
+      "id": "3b873650-9a1e-4eb0-b12a-5eac92957e3c",
+      "name": "Get Updated Record",
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        1056,
+        -1472
+      ],
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "FavyQ3PY0qVQyVbs",
+          "name": "Airtable account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "faeeb7e4-4641-4f6c-9376-a0fd4840e333",
+              "leftValue": "={{ $json.upload_status }}",
+              "rightValue": "PENDING",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "144e793b-6788-4ef4-8dba-d7a2c86032dd",
+              "leftValue": "={{ $json.upload_status }}",
+              "rightValue": "UPLOADED",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "id": "0f286bed-ab72-4386-8c45-5b62247284d3",
+      "name": "Check Verification Status",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1296,
+        -1408
+      ]
+    },
+    {
+      "parameters": {
+        "amount": 30
+      },
+      "id": "1e8f675d-f7cd-4572-a62f-36e99437c07e",
+      "name": "Wait",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        848,
+        -1408
+      ],
+      "webhookId": "65c00b29-ba3c-4e09-b379-403960bfae29"
+    },
+    {
+      "parameters": {
+        "base": {
+          "__rl": true,
+          "value": "appre6PhPtzCoNcOx",
+          "mode": "list",
+          "cachedResultName": "Employee Onboarding System",
+          "cachedResultUrl": "https://airtable.com/appre6PhPtzCoNcOx"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblqaBEAU5GooF2hm",
+          "mode": "list",
+          "cachedResultName": "Employees",
+          "cachedResultUrl": "https://airtable.com/appre6PhPtzCoNcOx/tblqaBEAU5GooF2hm"
+        },
+        "id": "={{ $('Airtable Trigger').item.json.fields['Record ID'] }}",
+        "options": {}
+      },
+      "id": "a33200ee-cf54-4f27-b1b3-b5e19e6a8950",
+      "name": "Get Updated Record1",
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        -48,
+        -1184
+      ],
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "FavyQ3PY0qVQyVbs",
+          "name": "Airtable account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 30
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        176,
+        -1024
+      ],
+      "id": "f93cbb5d-e845-4f38-8d52-674112916184",
+      "name": "Wait1",
+      "webhookId": "2486e065-b174-4bab-9e42-ca15adfbdd3d"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "mode-manual",
+                    "leftValue": "={{ $json.Verification_Mode }}",
+                    "rightValue": "Manual",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Manual"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "mode-ai",
+                    "leftValue": "={{ $json.Verification_Mode }}",
+                    "rightValue": "AI",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "AI"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "251579a6-debb-40c7-8ff0-894ba53ec677",
+      "name": "Check Verification Mode",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        400,
+        -1312
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "operation": "analyze",
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "text": "Does the uploaded document visually appear to be an Aadhaar Card?\n\nImportant:\n- Do NOT verify actual authenticity or content.\n- Only check if it visually looks like an Aadhaar Card.\n\nRespond with ONLY one word:\nVERIFIED or REJECTED\n\nRules:\n- If it looks like an Aadhaar Card → VERIFIED\n- If it does not → REJECTED\n\nDo not provide any explanation or additional text.",
+        "imageUrls": "={{ $json.Employee_Documents[0].url }}",
+        "options": {
+          "detail": "high",
+          "maxTokens": 500
+        }
+      },
+      "id": "f54726e6-0071-4a2e-9c19-0e98319e582d",
+      "name": "AI Document Verifier",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.1,
+      "position": [
+        960,
+        -1168
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "1IiIsZWdbLqL0FGE",
+          "name": "n8n free OpenAI API credits"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "base": {
+          "__rl": true,
+          "value": "appre6PhPtzCoNcOx",
+          "mode": "list",
+          "cachedResultName": "Employee Onboarding System",
+          "cachedResultUrl": "https://airtable.com/appre6PhPtzCoNcOx"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblqaBEAU5GooF2hm",
+          "mode": "list",
+          "cachedResultName": "Employees",
+          "cachedResultUrl": "https://airtable.com/appre6PhPtzCoNcOx/tblqaBEAU5GooF2hm"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "={{ $(\"Check Verification Mode\").item.json.id }}",
+            "upload_status": "={{ $json['0'].content[0].text }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "Employee Name",
+              "displayName": "Employee Name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Email_address",
+              "displayName": "Email_address",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Contact number",
+              "displayName": "Contact number",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Department",
+              "displayName": "Department",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "AI/ML",
+                  "value": "AI/ML"
+                },
+                {
+                  "name": "Web Devlopmeent",
+                  "value": "Web Devlopmeent"
+                },
+                {
+                  "name": "Data Science",
+                  "value": "Data Science"
+                },
+                {
+                  "name": "Cyber Security",
+                  "value": "Cyber Security"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Employee_ID",
+              "displayName": "Employee_ID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "Created_Time",
+              "displayName": "Created_Time",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "Employee_Documents",
+              "displayName": "Employee_Documents",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "upload_status",
+              "displayName": "upload_status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "VERIFIED",
+                  "value": "VERIFIED"
+                },
+                {
+                  "name": "REJECTED",
+                  "value": "REJECTED"
+                },
+                {
+                  "name": "UPLOADED",
+                  "value": "UPLOADED"
+                },
+                {
+                  "name": "PENDING",
+                  "value": "PENDING"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Record ID",
+              "displayName": "Record ID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "Company_Email",
+              "displayName": "Company_Email",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Select",
+              "displayName": "Select",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "send Welcom ",
+                  "value": "send Welcom "
+                },
+                {
+                  "name": "Not Send",
+                  "value": "Not Send"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Verification_Mode",
+              "displayName": "Verification_Mode",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Manual",
+                  "value": "Manual"
+                },
+                {
+                  "name": "AI",
+                  "value": "AI"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Attachment Summary",
+              "displayName": "Attachment Summary",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Documents",
+              "displayName": "Documents",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Verification",
+              "displayName": "Verification",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Documents 2",
+              "displayName": "Documents 2",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "94d9a347-48e0-459b-be30-aa293160469a",
+      "name": "Update Status from AI",
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        1152,
+        -1152
+      ],
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "FavyQ3PY0qVQyVbs",
+          "name": "Airtable account 2"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "id": "42275f9f-dd45-4963-aa72-03f705e050e4",
+      "name": "Merge Verification Paths",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1520,
+        -1312
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "4726b379-f2b0-459c-ac3f-a04698d7a179",
+              "leftValue": "={{ $json.upload_status }}",
+              "rightValue": "VERIFIED",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "0a7148b4-8449-46af-9210-3409fd5ba54e",
+              "leftValue": "={{ $json.fields.upload_status }}",
+              "rightValue": "VERIFIED",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "id": "9f7f95a9-9460-4559-9293-34d1831bae9e",
+      "name": "Check if Verified1",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1744,
+        -1312
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "base": {
+          "__rl": true,
+          "value": "appre6PhPtzCoNcOx",
+          "mode": "list",
+          "cachedResultName": "Employee Onboarding System",
+          "cachedResultUrl": "https://airtable.com/appre6PhPtzCoNcOx"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblqaBEAU5GooF2hm",
+          "mode": "list",
+          "cachedResultName": "Employees",
+          "cachedResultUrl": "https://airtable.com/appre6PhPtzCoNcOx/tblqaBEAU5GooF2hm"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "={{ $json.id ?? $json.fields.id }}",
+            "Company_Email": "={{ $('Airtable Trigger').item.json.fields['Employee Name'].toLowerCase()}}{{ $('Airtable Trigger').item.json.fields.Employee_ID }}@showrya.com"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "Company_Email",
+              "displayName": "Company_Email",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "0e09a83f-83a1-4833-a4d1-753e9153c7d9",
+      "name": "Update Company Email1",
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        1968,
+        -1408
+      ],
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "FavyQ3PY0qVQyVbs",
+          "name": "Airtable account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.fields.Email_address }}",
+        "subject": "Onboarding Completed ✅",
+        "message": "=Hello {{ $json.fields[\"Employee Name\"] }},<br><br>Your onboarding is complete! Your company email is: <strong>{{ $json.fields.Company_Email }}</strong><br><br>Welcome aboard!<br><br>HR Team",
+        "options": {}
+      },
+      "id": "65de03bd-ac01-4eaf-baba-9b303fd8929f",
+      "name": "Send Completion Email1",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        2192,
+        -1408
+      ],
+      "webhookId": "96d44e02-9308-475d-ade4-306014326c75",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "JCFa2XPuBXU9nEgN",
+          "name": "Gmail OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Airtable Trigger').item.json.fields.Email_address }}",
+        "subject": "Document Rejected - Action Required",
+        "message": "=Hello {{ $('Airtable Trigger').item.json.fields['Employee Name'] }},<br><br>Your uploaded documents have been rejected. Please upload your documents again.<br><br>Access your dashboard: https://phil65367.preview.softr.app/?autoUser=true&show-toolbar=true<br><br>HR Team",
+        "options": {}
+      },
+      "id": "88ae92a9-9bc1-4f4f-9562-5bd81fe0904a",
+      "name": "Send Rejection Email1",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1984,
+        -1072
+      ],
+      "webhookId": "0b55ebbb-a1c9-45e2-b34c-bc0e456c00a3",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "JCFa2XPuBXU9nEgN",
+          "name": "Gmail OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "base": {
+          "__rl": true,
+          "value": "appre6PhPtzCoNcOx",
+          "mode": "list",
+          "cachedResultName": "Employee Onboarding System",
+          "cachedResultUrl": "https://airtable.com/appre6PhPtzCoNcOx"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblqaBEAU5GooF2hm",
+          "mode": "list",
+          "cachedResultName": "Employees",
+          "cachedResultUrl": "https://airtable.com/appre6PhPtzCoNcOx/tblqaBEAU5GooF2hm"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "={{ $(\"Airtable Trigger\").item.json.id }}",
+            "upload_status": "PENDING"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "Employee Name",
+              "displayName": "Employee Name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Email_address",
+              "displayName": "Email_address",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Contact number",
+              "displayName": "Contact number",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Department",
+              "displayName": "Department",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "AI/ML",
+                  "value": "AI/ML"
+                },
+                {
+                  "name": "Web Devlopmeent",
+                  "value": "Web Devlopmeent"
+                },
+                {
+                  "name": "Data Science",
+                  "value": "Data Science"
+                },
+                {
+                  "name": "Cyber Security",
+                  "value": "Cyber Security"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Employee_ID",
+              "displayName": "Employee_ID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "Created_Time",
+              "displayName": "Created_Time",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "Employee_Documents",
+              "displayName": "Employee_Documents",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "upload_status",
+              "displayName": "upload_status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "VERIFIED",
+                  "value": "VERIFIED"
+                },
+                {
+                  "name": "REJECTED",
+                  "value": "REJECTED"
+                },
+                {
+                  "name": "UPLOADED",
+                  "value": "UPLOADED"
+                },
+                {
+                  "name": "PENDING",
+                  "value": "PENDING"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Record ID",
+              "displayName": "Record ID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "Company_Email",
+              "displayName": "Company_Email",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Select",
+              "displayName": "Select",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "send Welcom ",
+                  "value": "send Welcom "
+                },
+                {
+                  "name": "Not Send",
+                  "value": "Not Send"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Verification_Mode",
+              "displayName": "Verification_Mode",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Manual",
+                  "value": "Manual"
+                },
+                {
+                  "name": "AI",
+                  "value": "AI"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Attachment Summary",
+              "displayName": "Attachment Summary",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Documents",
+              "displayName": "Documents",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Verification",
+              "displayName": "Verification",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Documents 2",
+              "displayName": "Documents 2",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "0d2bf826-c5c9-4700-bc1d-7391b7cec46d",
+      "name": "Update Reject",
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        2288,
+        -912
+      ],
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "FavyQ3PY0qVQyVbs",
+          "name": "Airtable account 2"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Airtable Trigger": {
+      "main": [
+        [
+          {
+            "node": "Send Welcome Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Welcome Email": {
+      "main": [
+        [
+          {
+            "node": "Get Updated Record1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Document Uploaded": {
+      "main": [
+        [
+          {
+            "node": "Check Verification Mode",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Notify HR to Verify": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Updated Record": {
+      "main": [
+        [
+          {
+            "node": "Check Verification Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Verification Status": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Merge Verification Paths",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Get Updated Record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Updated Record1": {
+      "main": [
+        [
+          {
+            "node": "Check Document Uploaded",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait1": {
+      "main": [
+        [
+          {
+            "node": "Get Updated Record1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Verification Mode": {
+      "main": [
+        [
+          {
+            "node": "Notify HR to Verify",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "AI Document Verifier",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Document Verifier": {
+      "main": [
+        [
+          {
+            "node": "Update Status from AI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Status from AI": {
+      "main": [
+        [
+          {
+            "node": "Merge Verification Paths",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge Verification Paths": {
+      "main": [
+        [
+          {
+            "node": "Check if Verified1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check if Verified1": {
+      "main": [
+        [
+          {
+            "node": "Update Company Email1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send Rejection Email1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Company Email1": {
+      "main": [
+        [
+          {
+            "node": "Send Completion Email1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Rejection Email1": {
+      "main": [
+        [
+          {
+            "node": "Update Reject",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Reject": {
+      "main": [
+        [
+          {
+            "node": "Wait1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "3774ee65-2d33-445a-b83f-ad0adeb50d5a",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "16d9364f58560539409e08c24909423c80d9c8cdaf302bbddc5f887b114080f9"
+  },
+  "id": "TNHG7hPSapQYJ35Q",
+  "tags": [
+    {
+      "updatedAt": "2026-03-20T10:55:57.395Z",
+      "createdAt": "2026-03-20T10:55:57.395Z",
+      "id": "Fc6ep4LWU9tpRQrc",
+      "name": "Final"
+    }
+  ]
+}
